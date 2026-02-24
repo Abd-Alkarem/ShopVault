@@ -1,0 +1,12 @@
+{
+    "name": "shopvault",
+    "version": "1.0.0",
+    "description": "ShopVault Frontend",
+    "main": "app.js",
+    "scripts": {
+        "start": "serve ."
+    },
+    "dependencies": {
+        "serve": "^14.2.1"
+    }
+}

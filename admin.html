@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShopVault — Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-icon"><i class="fas fa-bolt"></i></div><span>ShopVault</span>
+            </div>
+            <nav class="sidebar-menu">
+                <div class="sidebar-label">Main</div>
+                <div class="sidebar-item active" data-panel="overview"><span class="icon"><i
+                            class="fas fa-th-large"></i></span> Overview</div>
+                <div class="sidebar-item" data-panel="products"><span class="icon"><i class="fas fa-box"></i></span>
+                    Products</div>
+                <div class="sidebar-item" data-panel="add-product"><span class="icon"><i
+                            class="fas fa-plus-circle"></i></span> Add Product</div>
+                <div class="sidebar-label">Sales & Stock</div>
+                <div class="sidebar-item" data-panel="sales"><span class="icon"><i
+                            class="fas fa-cash-register"></i></span> Sales</div>
+                <div class="sidebar-item" data-panel="stock"><span class="icon"><i class="fas fa-warehouse"></i></span>
+                    Stock</div>
+                <div class="sidebar-label">Management</div>
+                <div class="sidebar-item" data-panel="orders"><span class="icon"><i class="fas fa-receipt"></i></span>
+                    Orders</div>
+                <div class="sidebar-item" data-panel="customers"><span class="icon"><i class="fas fa-users"></i></span>
+                    Customers</div>
+                <div class="sidebar-item" data-panel="users"><span class="icon"><i
+                            class="fas fa-user-shield"></i></span> Users</div>
+                <div class="sidebar-label">System</div>
+                <div class="sidebar-item" data-panel="settings"><span class="icon"><i class="fas fa-cog"></i></span>
+                    Settings</div>
+                <div class="sidebar-item" onclick="Calculator.open()"><span class="icon"><i
+                            class="fas fa-calculator"></i></span> Calculator</div>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="sidebar-user">
+                    <div class="user-avatar">A</div>
+                    <div class="user-info">
+                        <div class="user-name">Admin</div>
+                        <div class="user-role">Store Manager</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="dashboard-content">
+            <header class="dashboard-header">
+                <div style="display:flex;align-items:center;gap:16px;">
+                    <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+                    <div>
+                        <h1 id="panelTitle">Dashboard Overview</h1>
+                        <p id="panelSubtitle">Welcome back!</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <a href="index.html" class="btn btn-secondary btn-sm"><i class="fas fa-external-link-alt"></i> View
+                        Store</a>
+                    <button class="btn btn-danger btn-sm" id="logoutBtn"><i class="fas fa-sign-out-alt"></i>
+                        Logout</button>
+                </div>
+            </header>
+
+            <!-- ========== OVERVIEW ========== -->
+            <div class="dashboard-panel active" id="panel-overview">
+                <!-- Period Filter -->
+                <div class="card" style="margin-bottom:var(--space-lg);padding:var(--space-md);">
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;">
+                        <label style="font-weight:600;font-size:0.85rem;">Period:</label>
+                        <select id="periodSelect" class="form-control" style="width:auto;padding:8px 36px 8px 14px;"
+                            onchange="AdminDashboard.changePeriod('period',this.value)">
+                            <option value="day">Day</option>
+                            <option value="month" selected>Month</option>
+                            <option value="year">Year</option>
+                        </select>
+                        <select id="yearSelect" class="form-control" style="width:auto;padding:8px 36px 8px 14px;"
+                            onchange="AdminDashboard.changePeriod('year',this.value)">
+                            <option value="2026" selected>2026</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- KPIs -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon revenue"><i class="fas fa-dollar-sign"></i></div>
+                        <div class="kpi-info">
+                            <h3>Total Revenue</h3>
+                            <div class="kpi-value" id="kpiRevenue">$0</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon" style="background:rgba(139,92,246,0.1);color:#8B5CF6;"><i
+                                class="fas fa-chart-line"></i></div>
+                        <div class="kpi-info">
+                            <h3>Total Profit</h3>
+                            <div class="kpi-value" id="kpiProfit">$0</div>
+                            <div class="kpi-change up" id="kpiProfitMargin">0% margin</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon orders"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="kpi-info">
+                            <h3>Units Sold</h3>
+                            <div class="kpi-value" id="kpiUnits">0</div>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon low-stock"><i class="fas fa-cubes"></i></div>
+                        <div class="kpi-info">
+                            <h3>Total Stock</h3>
+                            <div class="kpi-value" id="kpiStock">0</div>
+                            <div class="kpi-change down" id="kpiStockSub">0 low stock</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Charts -->
+                <div class="panel-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><i class="fas fa-chart-bar"
+                                    style="color:var(--primary);margin-right:8px;"></i> Sales Trend</h3>
+                        </div>
+                        <div id="salesTrendBars"></div>
+                    </div>
+                    <div>
+                        <div class="card" style="margin-bottom:var(--space-lg);">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-fire"
+                                        style="color:var(--danger);margin-right:8px;"></i> Top Products</h3>
+                            </div>
+                            <div id="topProductsList"></div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title"><i class="fas fa-exchange-alt"
+                                        style="color:var(--info);margin-right:8px;"></i> Stock Movements</h3>
+                            </div>
+                            <div id="movementsByReason"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== PRODUCTS ========== -->
+            <div class="dashboard-panel" id="panel-products">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">All Products</h3><button class="btn btn-primary btn-sm"
+                            onclick="AdminDashboard.showPanel('add-product')"><i class="fas fa-plus"></i> Add
+                            New</button>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Price / Cost</th>
+                                    <th>Stock</th>
+                                    <th>Status</th>
+                                    <th>Sold</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== ADD/EDIT PRODUCT ========== -->
+            <div class="dashboard-panel" id="panel-add-product">
+                <div class="card">
+                    <form class="product-form" id="productForm" onsubmit="return false;">
+                        <div class="form-row">
+                            <div class="form-group"><label for="prodName">Product Name *</label><input type="text"
+                                    id="prodName" class="form-control" placeholder="e.g. Wireless Headphones"
+                                    required /></div>
+                            <div class="form-group"><label for="prodSku">SKU</label><input type="text" id="prodSku"
+                                    class="form-control" placeholder="e.g. WHP-001" /></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="prodCategory">Category *</label><input type="text"
+                                    id="prodCategory" class="form-control" placeholder="e.g. Electronics" required />
+                            </div>
+                            <div class="form-group"><label for="prodBrand">Brand</label><input type="text"
+                                    id="prodBrand" class="form-control" placeholder="e.g. SoundMax" /></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="prodCountry">Country</label><input type="text"
+                                    id="prodCountry" class="form-control" placeholder="e.g. USA" /></div>
+                            <div class="form-group"><label for="prodEmoji">Emoji</label><input type="text"
+                                    id="prodEmoji" class="form-control" placeholder="📦" maxlength="2" /></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="prodPrice">Sell Price *</label><input type="number"
+                                    id="prodPrice" class="form-control" placeholder="0.00" step="0.01" min="0"
+                                    required /></div>
+                            <div class="form-group"><label for="prodCost">Cost Price</label><input type="number"
+                                    id="prodCost" class="form-control" placeholder="0.00" step="0.01" min="0" /></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="prodStock">Stock</label><input type="number"
+                                    id="prodStock" class="form-control" placeholder="0" min="0" /></div>
+                            <div class="form-group"><label for="prodImage">Image URL</label><input type="url"
+                                    id="prodImage" class="form-control" placeholder="https://..." /></div>
+                        </div>
+                        <div class="form-group"><label for="prodDesc">Description</label><textarea id="prodDesc"
+                                class="form-control" rows="3" placeholder="Describe the product..."></textarea></div>
+                        <div class="form-actions"><button type="submit" class="btn btn-primary" id="prodSubmitBtn"
+                                onclick="AdminDashboard.handleProductSubmit()"><i class="fas fa-plus"></i> Add
+                                Product</button><button type="button" class="btn btn-secondary"
+                                onclick="AdminDashboard.cancelProductForm()"><i class="fas fa-times"></i>
+                                Cancel</button></div>
+                    </form>
+                    <!-- Notes Section -->
+                    <div id="productNotes"
+                        style="display:none;margin-top:var(--space-xl);border-top:1px solid var(--border);padding-top:var(--space-lg);">
+                        <h3 class="card-title" style="margin-bottom:var(--space-md);"><i class="fas fa-sticky-note"
+                                style="color:var(--warning);margin-right:8px;"></i> Product Notes</h3>
+                        <div style="display:flex;gap:8px;margin-bottom:var(--space-md);"><input type="text"
+                                id="noteBody" class="form-control" placeholder="Add a note..." /><button
+                                class="btn btn-primary btn-sm" onclick="AdminDashboard.addNote()"><i
+                                    class="fas fa-plus"></i></button></div>
+                        <div class="notes-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SALES ========== -->
+            <div class="dashboard-panel" id="panel-sales">
+                <div class="card" style="margin-bottom:var(--space-lg);">
+                    <div class="card-header">
+                        <h3 class="card-title">Sales</h3><button class="btn btn-primary btn-sm"
+                            onclick="AdminDashboard.showSaleForm()"><i class="fas fa-plus"></i> New Sale</button>
+                    </div>
+                </div>
+                <!-- Sale Form -->
+                <div class="card hidden" id="saleFormCard" style="margin-bottom:var(--space-lg);">
+                    <h3 class="card-title" style="margin-bottom:var(--space-lg);">New Sale</h3>
+                    <div class="form-row">
+                        <div class="form-group"><label>Product *</label><select id="saleProductSelect"
+                                class="form-control">
+                                <option value="">Select a product</option>
+                            </select></div>
+                        <div class="form-group"><label>Quantity *</label><input type="number" id="saleQty"
+                                class="form-control" value="1" min="1" /></div>
+                    </div>
+                    <h4
+                        style="font-weight:600;margin-bottom:var(--space-md);padding-top:var(--space-md);border-top:1px solid var(--border);">
+                        Buyer Information</h4>
+                    <div class="form-row">
+                        <div class="form-group"><label>Buyer Name *</label><input type="text" id="saleBuyerName"
+                                class="form-control" placeholder="Enter buyer name" /></div>
+                        <div class="form-group"><label>Phone</label><input type="tel" id="saleBuyerPhone"
+                                class="form-control" placeholder="+1 234 567 8900" /></div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label>Email</label><input type="email" id="saleBuyerEmail"
+                                class="form-control" placeholder="buyer@example.com" /></div>
+                        <div class="form-group"><label>Address</label><input type="text" id="saleBuyerAddress"
+                                class="form-control" placeholder="123 Main St" /></div>
+                    </div>
+                    <div class="form-actions"><button class="btn btn-success" onclick="AdminDashboard.submitSale()"><i
+                                class="fas fa-check"></i> Create Sale</button><button class="btn btn-secondary"
+                            onclick="AdminDashboard.showSaleForm()"><i class="fas fa-times"></i> Cancel</button></div>
+                </div>
+                <!-- Sales History -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Sales History</h3>
+                        <div class="nav-search" style="width:260px;"><i class="fas fa-search search-icon"></i><input
+                                type="text" id="salesSearch" placeholder="Search sales..."
+                                oninput="AdminDashboard.renderSales()" /></div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Sale #</th>
+                                    <th>Date</th>
+                                    <th>Product</th>
+                                    <th>Buyer</th>
+                                    <th style="text-align:right;">Qty</th>
+                                    <th style="text-align:right;">Unit Price</th>
+                                    <th style="text-align:right;">Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="salesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== STOCK ========== -->
+            <div class="dashboard-panel" id="panel-stock">
+                <div class="card" style="margin-bottom:var(--space-lg);">
+                    <div class="card-header">
+                        <h3 class="card-title">Stock Management</h3><button class="btn btn-success btn-sm"
+                            onclick="AdminDashboard.showRefillForm()"><i class="fas fa-plus"></i> Add Refill</button>
+                    </div>
+                    <div class="kpi-grid" style="margin-top:var(--space-md);">
+                        <div class="kpi-card">
+                            <div class="kpi-icon" style="background:rgba(99,102,241,0.1);color:#6366F1;"><i
+                                    class="fas fa-boxes"></i></div>
+                            <div class="kpi-info">
+                                <h3>Total Products</h3>
+                                <div class="kpi-value" id="statTotalProducts">0</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon customers"><i class="fas fa-cubes"></i></div>
+                            <div class="kpi-info">
+                                <h3>Total Stock</h3>
+                                <div class="kpi-value" id="statTotalStock">0</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon low-stock"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="kpi-info">
+                                <h3>Low Stock</h3>
+                                <div class="kpi-value" id="statLowStock">0</div>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-icon" style="background:rgba(239,68,68,0.1);color:#EF4444;"><i
+                                    class="fas fa-times-circle"></i></div>
+                            <div class="kpi-info">
+                                <h3>Out of Stock</h3>
+                                <div class="kpi-value" id="statOutOfStock">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Refill Form -->
+                <div class="card hidden" id="refillFormCard" style="margin-bottom:var(--space-lg);">
+                    <h3 class="card-title" style="margin-bottom:var(--space-lg);">Add Stock Refill</h3>
+                    <div class="form-row">
+                        <div class="form-group"><label>Product *</label><select id="refillProductSelect"
+                                class="form-control">
+                                <option value="">Select a product</option>
+                            </select></div>
+                        <div class="form-group"><label>Quantity *</label><input type="number" id="refillQty"
+                                class="form-control" value="" min="1" placeholder="Enter quantity" /></div>
+                    </div>
+                    <div class="form-group"><label>Notes (optional)</label><textarea id="refillNotes"
+                            class="form-control" rows="2" placeholder="Add notes about this refill..."></textarea></div>
+                    <div class="form-actions"><button class="btn btn-success" onclick="AdminDashboard.submitRefill()"><i
+                                class="fas fa-check"></i> Add Refill</button><button class="btn btn-secondary"
+                            onclick="AdminDashboard.showRefillForm()"><i class="fas fa-times"></i> Cancel</button></div>
+                </div>
+                <!-- Stock Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Inventory</h3>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:30px;"></th>
+                                    <th>SKU</th>
+                                    <th>Product</th>
+                                    <th>Brand</th>
+                                    <th style="text-align:right;">On Hand</th>
+                                    <th style="text-align:right;">Sold</th>
+                                    <th>Status</th>
+                                    <th style="text-align:center;">Refills</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stockTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== ORDERS ========== -->
+            <div class="dashboard-panel" id="panel-orders">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">All Orders</h3>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== CUSTOMERS ========== -->
+            <div class="dashboard-panel" id="panel-customers">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Customer Base</h3>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Total Spent</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== USERS ========== -->
+            <div class="dashboard-panel" id="panel-users">
+                <div class="card" style="margin-bottom:var(--space-lg);">
+                    <h3 class="card-title" style="margin-bottom:var(--space-lg);"><i class="fas fa-user-plus"
+                            style="color:var(--primary);margin-right:8px;"></i> Add Admin</h3>
+                    <div style="display:flex;flex-wrap:wrap;gap:12px;">
+                        <input type="text" id="newUsername" class="form-control" placeholder="Username"
+                            style="flex:1;min-width:150px;" />
+                        <input type="text" id="newFullName" class="form-control" placeholder="Full name"
+                            style="flex:1;min-width:150px;" />
+                        <input type="password" id="newPassword" class="form-control" placeholder="Password"
+                            style="flex:1;min-width:150px;" />
+                        <button class="btn btn-primary" onclick="AdminDashboard.addUserSubmit()"><i
+                                class="fas fa-plus"></i> Add Admin</button>
+                    </div>
+                </div>
+                <div class="card" style="margin-bottom:var(--space-lg);">
+                    <div class="card-header">
+                        <h3 class="card-title">Admin Accounts</h3>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Full Name</th>
+                                    <th>Role</th>
+                                    <th>Owner</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-history"
+                                style="color:var(--info);margin-right:8px;"></i> Login History</h3>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>When</th>
+                                    <th>User</th>
+                                    <th>IP</th>
+                                    <th>Agent</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loginHistoryBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SETTINGS ========== -->
+            <div class="dashboard-panel" id="panel-settings">
+                <div class="settings-grid">
+                    <div class="card">
+                        <h3 class="card-title" style="margin-bottom:var(--space-lg);"><i class="fas fa-store"
+                                style="color:var(--primary);margin-right:8px;"></i> Store Settings</h3>
+                        <div class="form-group"><label for="setStoreName">Store Name</label><input type="text"
+                                id="setStoreName" class="form-control" placeholder="ShopVault" /></div>
+                        <div class="form-row">
+                            <div class="form-group"><label for="setCurrency">Currency</label><input type="text"
+                                    id="setCurrency" class="form-control" placeholder="$" maxlength="3" /></div>
+                            <div class="form-group"><label for="setLowStock">Low Stock Threshold</label><input
+                                    type="number" id="setLowStock" class="form-control" placeholder="10" min="1" />
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="AdminDashboard.saveSettings()"><i
+                                class="fas fa-save"></i> Save Settings</button>
+                    </div>
+                    <div class="card">
+                        <h3 class="card-title" style="margin-bottom:var(--space-lg);"><i class="fas fa-palette"
+                                style="color:var(--accent);margin-right:8px;"></i> Theme</h3>
+                        <div class="theme-options">
+                            <div class="theme-option active" data-theme="light">
+                                <div class="theme-preview"></div>
+                                <div style="font-weight:600;font-size:0.85rem;">Light</div>
+                            </div>
+                            <div class="theme-option" data-theme="dark">
+                                <div class="theme-preview"></div>
+                                <div style="font-weight:600;font-size:0.85rem;">Dark</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="grid-column:1/-1;">
+                        <h3 class="card-title" style="margin-bottom:var(--space-lg);"><i class="fas fa-database"
+                                style="color:var(--danger);margin-right:8px;"></i> Data Management</h3>
+                        <p style="color:var(--text-secondary);font-size:var(--text-sm);margin-bottom:var(--space-md);">
+                            Reset all store data to defaults. Cannot be undone.</p>
+                        <button class="btn btn-danger" onclick="AdminDashboard.resetData()"><i class="fas fa-undo"></i>
+                            Reset All Data</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Calculator Modal -->
+    <div class="modal-overlay" id="calcModal">
+        <div class="modal" style="width:320px;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2><i class="fas fa-calculator"></i> Calculator</h2><button class="modal-close"
+                    onclick="Calculator.close()"><i class="fas fa-times"></i></button>
+            </div>
+            <div
+                style="background:var(--bg);border-radius:var(--radius);padding:var(--space-md);text-align:right;margin-bottom:var(--space-md);">
+                <div style="font-size:0.8rem;color:var(--text-muted);min-height:20px;" id="calcOp"></div>
+                <div style="font-size:2rem;font-weight:800;word-break:break-all;" id="calcDisplay">0</div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+                <button class="btn btn-danger btn-sm" onclick="Calculator.clear()">C</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.toggleSign()">±</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.operation('%')">%</button>
+                <button class="btn btn-primary btn-sm" onclick="Calculator.operation('/')">÷</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.digit(7)">7</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.digit(8)">8</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.digit(9)">9</button>
+                <button class="btn btn-primary btn-sm" onclick="Calculator.operation('*')">×</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.digit(4)">4</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.digit(5)">5</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.digit(6)">6</button>
+                <button class="btn btn-primary btn-sm" onclick="Calculator.operation('-')">−</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.digit(1)">1</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.digit(2)">2</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.digit(3)">3</button>
+                <button class="btn btn-primary btn-sm" onclick="Calculator.operation('+')">+</button>
+                <button class="btn btn-secondary btn-sm" style="grid-column:span 2;"
+                    onclick="Calculator.digit(0)">0</button>
+                <button class="btn btn-secondary btn-sm" onclick="Calculator.decimal()">.</button>
+                <button class="btn btn-success btn-sm" onclick="Calculator.equals()">=</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="app.js"></script>
+    <script>document.addEventListener('DOMContentLoaded', () => AdminDashboard.init());</script>
+</body>
+
+</html>

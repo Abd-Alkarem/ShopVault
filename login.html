@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="ShopVault Admin — Sign in to manage your store." />
+    <title>ShopVault — Admin Login</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+</head>
+
+<body>
+
+    <div class="login-page">
+        <div class="login-card">
+            <div class="brand">
+                <div class="brand-icon"><i class="fas fa-bolt"></i></div>
+                <h1>ShopVault</h1>
+                <p>Sign in to the admin dashboard</p>
+            </div>
+
+            <div class="login-error" id="loginError">
+                <i class="fas fa-exclamation-circle"></i>
+                Invalid username or password. Try again.
+            </div>
+
+            <form id="loginForm" onsubmit="return false;">
+                <div class="form-group">
+                    <label for="username"><i class="fas fa-user"></i> Username</label>
+                    <input type="text" id="username" class="form-control" placeholder="Enter your username"
+                        autocomplete="username" required />
+                </div>
+                <div class="form-group">
+                    <label for="password"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="password" class="form-control" placeholder="Enter your password"
+                        autocomplete="current-password" required />
+                </div>
+
+                <div class="login-options">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="remember" />
+                        Remember me
+                    </label>
+                    <a href="#">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="width:100%;" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+
+            <p style="text-align:center;margin-top:24px;font-size:0.8rem;color:#64748B;">
+                Default: <strong style="color:#A29BFE;">admin</strong> / <strong
+                    style="color:#A29BFE;">admin123</strong>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const user = document.getElementById('username').value.trim();
+            const pass = document.getElementById('password').value;
+            const errEl = document.getElementById('loginError');
+
+            if (user === 'admin' && pass === 'admin123') {
+                sessionStorage.setItem('shopvault_admin', 'true');
+                window.location.href = 'admin.html';
+            } else {
+                errEl.classList.add('show');
+                setTimeout(() => errEl.classList.remove('show'), 3000);
+            }
+        });
+    </script>
+</body>
+
+</html>
